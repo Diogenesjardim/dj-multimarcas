@@ -258,15 +258,13 @@ function mostrarErro(msg){
   window.scrollTo(0,document.body.scrollHeight);
 }
 async function enviar(){
-  alert('DEBUG: enviar() chamado');
   const nome=document.getElementById('cl_nome').value.trim();
   const zap=document.getElementById('cl_zap').value.trim();
   const banco=document.getElementById('cl_banco').value;
   const parcRest=document.getElementById('cl_parc_rest').value;
   const restricoes=Array.from(document.querySelectorAll('input[name="rest"]:checked')).map(c=>c.value);
-  alert('DEBUG nome='+nome+' zap='+zap+' banco='+banco+' parc='+parcRest+' rest='+restricoes.length);
   if(!nome){mostrarErro('Informe seu nome.');return;}
-  if(!zap||zap.replace(/\D/g,'').length<10){mostrarErro('Informe seu WhatsApp com DDD. ('+zap.replace(/\D/g,'').length+' digitos)');return;}
+  if(!zap||zap.replace(/\D/g,'').length<10){mostrarErro('Informe seu WhatsApp com DDD.');return;}
   if(!banco){mostrarErro('Selecione o banco.');return;}
   if(!parcRest){mostrarErro('Informe as parcelas restantes.');return;}
   if(!restricoes.length){mostrarErro('Marque pelo menos uma opcao de restricao.');return;}
