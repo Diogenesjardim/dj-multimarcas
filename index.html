@@ -230,10 +230,15 @@ async function enviar(){
   if(!restricoes.length)return alert('Marque pelo menos uma opção de restrição.');
   const btn=document.getElementById('btn_enviar');
   btn.disabled=true;btn.textContent='Enviando...';
-  const req={nome,zap,cidade:document.getElementById('cl_cidade').value.trim(),placa:document.getElementById('cl_placa').value.trim().toUpperCase(),renavam:document.getElementById('cl_renavam').value.trim(),modelo:document.getElementById('cl_modelo').value.trim(),banco,parc_rest:parseInt(parcRest)||0,parc_atr:parseInt(document.getElementById('cl_parc_atr').value)||0,val_parc:document.getElementById('cl_val_parc').value.trim(),saldo:document.getElementById('cl_saldo').value.trim(),restricao:restricoes.join(', '),obs:document.getElementById('cl_obs').value.trim(),data_envio:new Date().toISOString(),visto:false};
-  const res=await sb.from('solicitacoes').insert([req]);
-  btn.disabled=false;btn.textContent='Enviar para análise gratuita →';
-  if(res.error)return alert('Erro ao enviar: '+res.error.message);
+  try {
+    const req={nome,zap,cidade:document.getElementById('cl_cidade').value.trim(),placa:document.getElementById('cl_placa').value.trim().toUpperCase(),renavam:document.getElementById('cl_renavam').value.trim(),modelo:document.getElementById('cl_modelo').value.trim(),banco,parc_rest:parseInt(parcRest)||0,parc_atr:parseInt(document.getElementById('cl_parc_atr').value)||0,val_parc:document.getElementById('cl_val_parc').value.trim(),saldo:document.getElementById('cl_saldo').value.trim(),restricao:restricoes.join(', '),obs:document.getElementById('cl_obs').value.trim(),data_envio:new Date().toISOString(),visto:false};
+    const res=await sb.from('solicitacoes').insert([req]);
+    btn.disabled=false;btn.textContent='Enviar para análise gratuita →';
+    if(res.error){alert('Erro Supabase: '+res.error.message+' | Code: '+res.error.code);return;}
+  } catch(e) {
+    btn.disabled=false;btn.textContent='Enviar para análise gratuita →';
+    alert('Erro JS: '+e.message);return;
+  }
   const veic=req.modelo||req.placa||'Veículo não informado';
   const atr=req.parc_atr>0?'\n'+req.parc_atr+' em atraso':'';
   const msg='Olá! Preenchi o formulário da DJ Multimarcas.\n\nNome: '+nome+'\nVeículo: '+veic+'\nBanco: '+banco+'\nParcelas restantes: '+parcRest+atr+'\nRestrição: '+restricoes.join(', ');
