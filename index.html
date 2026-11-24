@@ -200,13 +200,43 @@ textarea{resize:vertical;min-height:76px}
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 const SENHA = 'dj2024';
 const ZAP_DJ = '5511956302529';
 const SUPABASE_URL = 'https://jxttklxxyosvphqqbczr.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dHRrbHh4eW9zdnBocXFiY3pyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0ODYwMDYsImV4cCI6MjExMTA2MjAwNn0.CKzD7ZLao_oR6CGfdmz9XQ97Q4RwTVEiCVFWtY-hMX0';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Funções fetch direto para Supabase REST API
+async function sbInsert(data) {
+  const r = await fetch(SUPABASE_URL+'/rest/v1/solicitacoes', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},
+    body:JSON.stringify(data)
+  });
+  if(!r.ok){const t=await r.text();return{error:{message:t}};}
+  return{error:null};
+}
+async function sbSelect() {
+  const r = await fetch(SUPABASE_URL+'/rest/v1/solicitacoes?select=*&order=data_envio.desc&limit=100', {
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+  });
+  if(!r.ok)return{data:null,error:{message:'erro'}};
+  return{data:await r.json(),error:null};
+}
+async function sbUpdate(id) {
+  await fetch(SUPABASE_URL+'/rest/v1/solicitacoes?id=eq.'+id, {
+    method:'PATCH',
+    headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY},
+    body:JSON.stringify({visto:true})
+  });
+}
+async function sbDelete(id) {
+  await fetch(SUPABASE_URL+'/rest/v1/solicitacoes?id=eq.'+id, {
+    method:'DELETE',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+  });
+}
 let filtro = 'todos', todasReqs = [];
 
 const LOGO = 'download.jpg';
@@ -239,7 +269,7 @@ async function enviar(){
   btn.disabled=true;btn.textContent='Enviando...';
   try {
     const req={nome,zap,cidade:document.getElementById('cl_cidade').value.trim(),placa:document.getElementById('cl_placa').value.trim().toUpperCase(),renavam:document.getElementById('cl_renavam').value.trim(),modelo:document.getElementById('cl_modelo').value.trim(),banco,parc_rest:parseInt(parcRest)||0,parc_atr:parseInt(document.getElementById('cl_parc_atr').value)||0,val_parc:document.getElementById('cl_val_parc').value.trim(),saldo:document.getElementById('cl_saldo').value.trim(),restricao:restricoes.join(', '),obs:document.getElementById('cl_obs').value.trim(),data_envio:new Date().toISOString(),visto:false};
-    const res=await sb.from('solicitacoes').insert([req]);
+    const res=await sbInsert(req);
     btn.disabled=false;btn.textContent='Enviar para análise gratuita →';
     if(res.error){mostrarErro('Erro: '+res.error.message);return;}
   } catch(e) {
@@ -255,7 +285,7 @@ async function enviar(){
 
 async function carregarReqs(){
   document.getElementById('req_list').innerHTML='<div class="loading">Carregando...</div>';
-  const res=await sb.from('solicitacoes').select('*').order('data_envio',{ascending:false}).limit(100);
+  const res=await sbSelect();
   if(res.error){document.getElementById('req_list').innerHTML='<div class="empty">Erro ao carregar.</div>';return}
   todasReqs=res.data||[];renderAdmin();
 }
@@ -304,13 +334,13 @@ function renderAdmin(){
 }
 
 async function marcarVisto(id){
-  await sb.from('solicitacoes').update({visto:true}).eq('id',id);
+  await sbUpdate(id);
   const idx=todasReqs.findIndex(r=>r.id===id);
   if(idx>=0){todasReqs[idx].visto=true;renderAdmin()}
 }
 async function delReq(id){
   if(!confirm('Remover?'))return;
-  await sb.from('solicitacoes').delete().eq('id',id);
+  await sbDelete(id);
   todasReqs=todasReqs.filter(r=>r.id!==id);renderAdmin();
 }
 </script>
