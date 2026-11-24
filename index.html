@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DJ Multimarcas02 SP — Solicitar Análise</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f5f5f5;min-height:100vh}
+.tela{display:none}.tela.ativa{display:block}
+.hero{background:linear-gradient(135deg,#0d0d0d,#1a0000);padding:1.5rem 1rem;text-align:center}
+.hero img{width:100%;max-width:380px;display:block;margin:0 auto}
+.hero h1{font-size:18px;font-weight:700;color:#fff;margin-top:.75rem}
+.hero p{font-size:13px;color:#bbb;margin-top:4px}
+.container{max-width:560px;margin:0 auto;padding:1.25rem 1rem}
+.card{background:#fff;border-radius:14px;padding:1.25rem;margin-bottom:1rem;border:1px solid #e5e5e5}
+.card-title{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.step-badge{width:22px;height:22px;background:#f0c040;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#1a1a2e;flex-shrink:0}
+.fg{margin-bottom:.9rem}
+.lbl{font-size:13px;color:#555;margin-bottom:4px;display:block}
+.obrig{color:#e24b4a}
+input,select,textarea{width:100%;padding:11px 12px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:15px;color:#333;background:#fff;outline:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#f0c040}
+textarea{resize:vertical;min-height:76px}
+.check-group{display:flex;flex-direction:column;gap:7px}
+.check-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:10px;cursor:pointer;font-size:14px;color:#333}
+.check-opt:has(input:checked){border-color:#f0c040;background:#fffcf0;font-weight:500}
+.check-opt input{width:17px;height:17px;accent-color:#f0c040;flex-shrink:0;margin:0}
+.tip{font-size:12px;color:#888;margin-top:4px;padding:5px 9px;background:#f9f9f9;border-radius:7px}
+.btn-enviar{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,#f0c040,#e8a800);color:#1a1a2e;font-size:16px;font-weight:700;cursor:pointer;margin-top:.5rem}
+.btn-enviar:disabled{opacity:.5;cursor:not-allowed}
+.sucesso-wrap{text-align:center;padding:2.5rem 1rem}
+.sucesso-ico{font-size:60px;margin-bottom:1rem}
+.sucesso-wrap h2{font-size:20px;font-weight:700;color:#1a1a2e;margin-bottom:.5rem}
+.sucesso-wrap p{font-size:14px;color:#666;margin-bottom:1.5rem}
+.zap-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;background:#25d366;color:#fff;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;background:#f5f5f5}
+.login-card{background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:340px;text-align:center;border:1px solid #e5e5e5}
+.login-logo{width:52px;height:52px;background:#1a1a2e;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#f0c040;margin-bottom:1rem}
+.login-card h2{font-size:17px;font-weight:600;color:#1a1a2e;margin-bottom:.25rem}
+.login-card p{font-size:13px;color:#888;margin-bottom:1.25rem}
+.login-card input{margin-bottom:1rem;text-align:center;font-size:16px;letter-spacing:3px}
+.btn-login{width:100%;padding:13px;border:none;border-radius:10px;background:#f0c040;color:#1a1a2e;font-size:15px;font-weight:700;cursor:pointer}
+.login-err{font-size:13px;color:#a32d2d;margin-top:.75rem;display:none}
+.admin-bar{background:#1a1a2e;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.admin-bar span{color:#f0c040;font-weight:600;font-size:14px}
+.admin-bar button{padding:6px 12px;border:1px solid #f0c040;border-radius:8px;background:transparent;color:#f0c040;cursor:pointer;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.stat-box{background:#fff;border-radius:10px;padding:10px;text-align:center;border:1px solid #e5e5e5}
+.stat-box .sv{font-size:22px;font-weight:700;color:#1a1a2e}
+.stat-box .sl{font-size:11px;color:#888;margin-top:1px}
+.filtro-bar{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.fbtn{padding:7px 12px;border:1px solid #ddd;border-radius:20px;background:#fff;color:#666;cursor:pointer;font-size:12px}
+.fbtn.on{background:#1a1a2e;color:#f0c040;border-color:#1a1a2e}
+.req-card{background:#fff;border-radius:12px;padding:1.1rem;margin-bottom:.75rem;border:1px solid #e5e5e5;cursor:pointer}
+.req-card.novo{border-left:3px solid #f0c040}
+.req-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;padding-bottom:.6rem;border-bottom:1px solid #f0f0f0}
+.req-nome{font-size:15px;font-weight:600;color:#1a1a2e}
+.req-data{font-size:12px;color:#aaa;margin-top:2px}
+.req-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:.75rem}
+.ri{background:#f9f9f9;border-radius:8px;padding:7px 9px}
+.ri.full{grid-column:1/-1}
+.ri-lbl{font-size:11px;color:#888;margin-bottom:1px}
+.ri-val{font-size:13px;font-weight:500;color:#222}
+.req-actions{display:flex;gap:7px}
+.btn-zap2{flex:1;padding:9px;border:none;border-radius:8px;background:#25d366;color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+.btn-copiar{flex:1;padding:9px;border:none;border-radius:8px;background:#f0c040;color:#1a1a2e;font-size:13px;font-weight:600;cursor:pointer}
+.btn-del2{padding:9px 12px;border:1px solid #eee;border-radius:8px;background:#fff;color:#bbb;font-size:13px;cursor:pointer}
+.badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;display:inline-block;margin-left:6px}
+.badge.novo{background:#f0c040;color:#1a1a2e}
+.badge.ok{background:#eaf3de;color:#3b6d11}
+.badge.med{background:#faeeda;color:#854f0b}
+.badge.bad{background:#fcebeb;color:#a32d2d}
+.empty{text-align:center;padding:2.5rem;color:#aaa;font-size:14px}
+.loading{text-align:center;padding:2rem;color:#aaa;font-size:14px}
+.admin-link{text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px solid #f0f0f0}
+.admin-link button{font-size:12px;color:#bbb;background:none;border:none;cursor:pointer;padding:8px}
+</style>
+</head>
+<body>
+
+<div id="tela_form" class="tela ativa">
+  <div class="hero">
+    <img id="logo_img" alt="DJ Multimarcas02 SP">
+    <h1>Solicite sua análise gratuita</h1>
+    <p>Preencha os dados e nossa equipe entra em contato pelo WhatsApp</p>
+  </div>
+  <div class="container">
+    <div class="card">
+      <div class="card-title"><span class="step-badge">1</span> Seus dados</div>
+      <div class="fg"><label class="lbl">&#128100; Nome completo <span class="obrig">*</span></label>
+        <input type="text" id="cl_nome" placeholder="Ex: João Silva"></div>
+      <div class="fg"><label class="lbl">&#128241; WhatsApp <span class="obrig">*</span></label>
+        <input type="tel" id="cl_zap" placeholder="(11) 99999-9999" oninput="maskZap(this)"></div>
+      <div class="fg"><label class="lbl">&#128205; Cidade onde o veículo está</label>
+        <input type="text" id="cl_cidade" placeholder="Ex: Osasco - SP"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="step-badge">2</span> Dados do veículo</div>
+      <div class="fg"><label class="lbl">&#128663; Placa <span class="obrig">*</span></label>
+        <input type="text" id="cl_placa" placeholder="Ex: ABC1234" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')" maxlength="7"></div>
+      <div class="fg"><label class="lbl">&#128196; RENAVAM</label>
+        <input type="text" id="cl_renavam" placeholder="Ex: 00123456789" inputmode="numeric" maxlength="11">
+        <div class="tip">Está no documento do veículo (CRLV)</div></div>
+      <div class="fg"><label class="lbl">&#128664; Modelo do veículo</label>
+        <input type="text" id="cl_modelo" placeholder="Ex: Honda Fan 160 2022"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="step-badge">3</span> Financiamento</div>
+      <div class="fg"><label class="lbl">&#127968; Banco / financeira <span class="obrig">*</span></label>
+        <select id="cl_banco">
+          <option value="">Selecione</option>
+          <option>Itaú</option><option>Santander</option><option>Bradesco</option>
+          <option>BV Financeira</option><option>Aymore</option><option>Banco Pan</option>
+          <option>RCI Brasil / Renault</option><option>Itaucard</option><option>Alfa</option>
+          <option>Daycoval</option><option>DigiMais</option><option>Fiat</option>
+          <option>Honda</option><option>Omni</option><option>Yamaha</option>
+          <option>Banco do Brasil</option><option>Caixa Econômica</option>
+          <option>Porto Seguro</option><option>Volkswagen</option><option>BMW</option>
+          <option>Banco Safra</option><option>Outro</option>
+        </select></div>
+      <div class="fg"><label class="lbl">&#128198; Parcelas restantes <span class="obrig">*</span></label>
+        <input type="number" id="cl_parc_rest" placeholder="Ex: 35" min="1"></div>
+      <div class="fg"><label class="lbl">&#9888;&#65039; Parcelas em atraso</label>
+        <input type="number" id="cl_parc_atr" placeholder="0 (zero se não houver)" min="0"></div>
+      <div class="fg"><label class="lbl">&#128176; Valor aproximado da parcela (R$)</label>
+        <input type="text" inputmode="decimal" id="cl_val_parc" placeholder="Ex: 850,00"></div>
+      <div class="fg"><label class="lbl">&#128179; Saldo devedor aproximado (se souber)</label>
+        <input type="text" inputmode="decimal" id="cl_saldo" placeholder="Ex: 25.000,00">
+        <div class="tip">Pode ver no app ou extrato do banco. Não obrigatório.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="step-badge">4</span> Restrições</div>
+      <div class="fg"><label class="lbl">&#128680; Existe busca e apreensão, bloqueio ou restrição? <span class="obrig">*</span></label>
+        <div class="tip" style="margin-bottom:8px">Pode marcar mais de uma opção</div>
+        <div class="check-group">
+          <label class="check-opt"><input type="checkbox" name="rest" value="Nao tenho conhecimento de restricoes"> Não tenho conhecimento de restrições</label>
+          <label class="check-opt"><input type="checkbox" name="rest" value="Sim - busca e apreensao"> Sim — busca e apreensão</label>
+          <label class="check-opt"><input type="checkbox" name="rest" value="Sim - bloqueio judicial"> Sim — bloqueio judicial</label>
+          <label class="check-opt"><input type="checkbox" name="rest" value="Sim - outra restricao"> Sim — outra restrição</label>
+          <label class="check-opt"><input type="checkbox" name="rest" value="Nao sei informar"> Não sei informar</label>
+        </div></div>
+      <div class="fg"><label class="lbl">&#128221; Observações</label>
+        <textarea id="cl_obs" placeholder="Qualquer informação adicional..."></textarea></div>
+    </div>
+    <button class="btn-enviar" id="btn_enviar" onclick="enviar()">Enviar para análise gratuita →</button>
+    <div class="admin-link"><button onclick="showLogin()">Área administrativa</button></div>
+  </div>
+</div>
+
+<div id="tela_sucesso" class="tela">
+  <div class="hero"><img id="logo_img2" alt="DJ Multimarcas02 SP" style="max-width:260px"></div>
+  <div class="container">
+    <div class="card sucesso-wrap">
+      <div class="sucesso-ico">&#9989;</div>
+      <h2>Solicitação enviada!</h2>
+      <p>Nossa equipe vai analisar e entrar em contato pelo WhatsApp em breve.</p>
+      <a id="zap_link" href="#" class="zap-btn" target="_blank">&#128172; Falar pelo WhatsApp agora</a>
+      <br><br>
+      <button onclick="showForm()" style="background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;padding:8px">Enviar outra solicitação</button>
+    </div>
+  </div>
+</div>
+
+<div id="tela_login" class="tela">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">DJ</div>
+      <h2>Área administrativa</h2>
+      <p>Digite a senha para acessar</p>
+      <input type="password" id="senha_input" placeholder="••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+      <button class="btn-login" onclick="fazerLogin()">Entrar</button>
+      <div class="login-err" id="login_err">Senha incorreta.</div>
+      <div style="margin-top:1rem">
+        <button onclick="showForm()" style="background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;padding:8px">← Voltar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tela_admin" class="tela">
+  <div class="admin-bar">
+    <span>&#128272; DJ Multimarcas — Admin</span>
+    <button onclick="showForm()">Sair</button>
+  </div>
+  <div class="container" style="padding-top:1rem">
+    <div class="stats">
+      <div class="stat-box"><div class="sv" id="st_total">—</div><div class="sl">Total</div></div>
+      <div class="stat-box"><div class="sv" id="st_hoje">—</div><div class="sl">Hoje</div></div>
+      <div class="stat-box"><div class="sv" id="st_atr">—</div><div class="sl">Com atraso</div></div>
+    </div>
+    <div class="filtro-bar">
+      <button class="fbtn on" onclick="setFiltro('todos',this)">Todos</button>
+      <button class="fbtn" onclick="setFiltro('novo',this)">Novos</button>
+      <button class="fbtn" onclick="setFiltro('atraso',this)">Atraso</button>
+      <button class="fbtn" onclick="setFiltro('restricao',this)">Restrição</button>
+    </div>
+    <div id="req_list"><div class="loading">Carregando...</div></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SENHA = 'dj2024';
+const ZAP_DJ = '5511956302529';
+const SUPABASE_URL = 'https://jxttklxxyosvphqqbczr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_SS7UBvNUc5hV52W_WfPFTw_BvadGY5Z';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let filtro = 'todos', todasReqs = [];
+
+const LOGO =  + logo + ;
+document.getElementById('logo_img').src = LOGO;
+document.getElementById('logo_img2').src = LOGO;
+
+function showTela(id){document.querySelectorAll('.tela').forEach(t=>t.classList.remove('ativa'));document.getElementById(id).classList.add('ativa')}
+function showForm(){showTela('tela_form')}
+function showLogin(){showTela('tela_login');document.getElementById('senha_input').value='';document.getElementById('login_err').style.display='none'}
+function showAdmin(){showTela('tela_admin');carregarReqs()}
+function maskZap(el){let v=el.value.replace(/\D/g,'').slice(0,11);if(v.length>10)v=v.replace(/^(\d{2})(\d{5})(\d{4})$/,'($1) $2-$3');else if(v.length>6)v=v.replace(/^(\d{2})(\d{4})(\d+)$/,'($1) $2-$3');else if(v.length>2)v=v.replace(/^(\d{2})(\d+)$/,'($1) $2');el.value=v}
+function fazerLogin(){if(document.getElementById('senha_input').value===SENHA)showAdmin();else document.getElementById('login_err').style.display='block'}
+
+async function enviar(){
+  const nome=document.getElementById('cl_nome').value.trim();
+  const zap=document.getElementById('cl_zap').value.trim();
+  const banco=document.getElementById('cl_banco').value;
+  const parcRest=document.getElementById('cl_parc_rest').value;
+  const restricoes=Array.from(document.querySelectorAll('input[name="rest"]:checked')).map(c=>c.value);
+  if(!nome)return alert('Informe seu nome.');
+  if(!zap||zap.length<10)return alert('Informe seu WhatsApp.');
+  if(!banco)return alert('Selecione o banco.');
+  if(!parcRest)return alert('Informe as parcelas restantes.');
+  if(!restricoes.length)return alert('Marque pelo menos uma opção de restrição.');
+  const btn=document.getElementById('btn_enviar');
+  btn.disabled=true;btn.textContent='Enviando...';
+  const req={nome,zap,cidade:document.getElementById('cl_cidade').value.trim(),placa:document.getElementById('cl_placa').value.trim().toUpperCase(),renavam:document.getElementById('cl_renavam').value.trim(),modelo:document.getElementById('cl_modelo').value.trim(),banco,parc_rest:parseInt(parcRest)||0,parc_atr:parseInt(document.getElementById('cl_parc_atr').value)||0,val_parc:document.getElementById('cl_val_parc').value.trim(),saldo:document.getElementById('cl_saldo').value.trim(),restricao:restricoes.join(', '),obs:document.getElementById('cl_obs').value.trim(),data_envio:new Date().toISOString(),visto:false};
+  const res=await sb.from('solicitacoes').insert([req]);
+  btn.disabled=false;btn.textContent='Enviar para análise gratuita →';
+  if(res.error)return alert('Erro ao enviar: '+res.error.message);
+  const veic=req.modelo||req.placa||'Veículo não informado';
+  const atr=req.parc_atr>0?'\n'+req.parc_atr+' em atraso':'';
+  const msg='Olá! Preenchi o formulário da DJ Multimarcas.\n\nNome: '+nome+'\nVeículo: '+veic+'\nBanco: '+banco+'\nParcelas restantes: '+parcRest+atr+'\nRestrição: '+restricoes.join(', ');
+  document.getElementById('zap_link').href='https://wa.me/'+ZAP_DJ+'?text='+encodeURIComponent(msg);
+  showTela('tela_sucesso');
+}
+
+async function carregarReqs(){
+  document.getElementById('req_list').innerHTML='<div class="loading">Carregando...</div>';
+  const res=await sb.from('solicitacoes').select('*').order('data_envio',{ascending:false}).limit(100);
+  if(res.error){document.getElementById('req_list').innerHTML='<div class="empty">Erro ao carregar.</div>';return}
+  todasReqs=res.data||[];renderAdmin();
+}
+
+function setFiltro(f,btn){filtro=f;document.querySelectorAll('.filtro-bar .fbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderAdmin()}
+
+function renderAdmin(){
+  const hoje=new Date().toISOString().slice(0,10);
+  document.getElementById('st_total').textContent=todasReqs.length;
+  document.getElementById('st_hoje').textContent=todasReqs.filter(r=>r.data_envio&&r.data_envio.slice(0,10)===hoje).length;
+  document.getElementById('st_atr').textContent=todasReqs.filter(r=>r.parc_atr>0).length;
+  let reqs=[...todasReqs];
+  if(filtro==='novo')reqs=reqs.filter(r=>!r.visto);
+  else if(filtro==='atraso')reqs=reqs.filter(r=>r.parc_atr>0);
+  else if(filtro==='restricao')reqs=reqs.filter(r=>r.restricao&&!r.restricao.startsWith('Nao'));
+  const el=document.getElementById('req_list');
+  if(!reqs.length){el.innerHTML='<div class="empty">Nenhuma solicitação encontrada.</div>';return}
+  el.innerHTML=reqs.map(r=>{
+    const dt=r.data_envio?new Date(r.data_envio).toLocaleString('pt-BR'):'';
+    const badgeAtr=!r.parc_atr||r.parc_atr===0?'<span class="badge ok">Em dia</span>':r.parc_atr<=3?'<span class="badge med">'+r.parc_atr+' atraso</span>':'<span class="badge bad">'+r.parc_atr+' atraso</span>';
+    const temRest=r.restricao&&!r.restricao.startsWith('Nao');
+    const zapNum=r.zap?r.zap.replace(/\D/g,''):'';
+    const msgZ=encodeURIComponent('Olá '+r.nome+'! Sou da DJ Multimarcas SP. Recebi sua solicitação e gostaria de conversar. Tem um momento?');
+    const dados='Cliente: '+r.nome+'\nVeículo: '+(r.modelo||r.placa||'-')+'\nBanco: '+r.banco+'\nParcelas: '+r.parc_rest+' rest / '+(r.parc_atr||0)+' atraso\nValor parcela: '+(r.val_parc||'-')+'\nSaldo: '+(r.saldo||'-')+'\nRestrição: '+(r.restricao||'-');
+    return '<div class="req-card '+(r.visto?'':'novo')+'" onclick="marcarVisto('+r.id+')">'
+      +'<div class="req-header"><div>'
+      +'<div class="req-nome">'+r.nome+(r.visto?'':'<span class="badge novo">NOVO</span>')+'</div>'
+      +'<div class="req-data">'+r.zap+(r.cidade?' · '+r.cidade:'')+' · '+dt+'</div>'
+      +'</div></div>'
+      +'<div class="req-grid">'
+      +(r.placa?'<div class="ri"><div class="ri-lbl">Placa</div><div class="ri-val">'+r.placa+'</div></div>':'')
+      +(r.modelo?'<div class="ri full"><div class="ri-lbl">Modelo</div><div class="ri-val">'+r.modelo+'</div></div>':'')
+      +'<div class="ri"><div class="ri-lbl">Banco</div><div class="ri-val">'+r.banco+'</div></div>'
+      +'<div class="ri"><div class="ri-lbl">Parcelas</div><div class="ri-val">'+r.parc_rest+' rest '+badgeAtr+'</div></div>'
+      +(r.val_parc?'<div class="ri"><div class="ri-lbl">Parcela</div><div class="ri-val">R$ '+r.val_parc+'</div></div>':'')
+      +(r.saldo?'<div class="ri"><div class="ri-lbl">Saldo</div><div class="ri-val">R$ '+r.saldo+'</div></div>':'')
+      +'<div class="ri '+(temRest?'full':'')+'"><div class="ri-lbl">Restrição</div><div class="ri-val" style="color:'+(temRest?'#a32d2d':'#3b6d11')+'">'+r.restricao+'</div></div>'
+      +(r.obs?'<div class="ri full"><div class="ri-lbl">Obs</div><div class="ri-val">'+r.obs+'</div></div>':'')
+      +'</div>'
+      +'<div class="req-actions">'
+      +'<button class="btn-copiar" onclick="event.stopPropagation();navigator.clipboard.writeText(''+dados.replace(/'/g,"\'").replace(/\n/g,'\\n')+'').then(()=>alert('Copiado!'))">Copiar dados</button>'
+      +'<button class="btn-zap2" onclick="event.stopPropagation();window.open('https://wa.me/'+zapNum+'?text='+msgZ+'','_blank')">WhatsApp</button>'
+      +'<button class="btn-del2" onclick="event.stopPropagation();delReq('+r.id+')">Del</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+async function marcarVisto(id){
+  await sb.from('solicitacoes').update({visto:true}).eq('id',id);
+  const idx=todasReqs.findIndex(r=>r.id===id);
+  if(idx>=0){todasReqs[idx].visto=true;renderAdmin()}
+}
+async function delReq(id){
+  if(!confirm('Remover?'))return;
+  await sb.from('solicitacoes').delete().eq('id',id);
+  todasReqs=todasReqs.filter(r=>r.id!==id);renderAdmin();
+}
+</script>
+</body>
+</html>
