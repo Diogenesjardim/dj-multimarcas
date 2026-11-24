@@ -278,9 +278,18 @@ async function enviar(e){
   const atr=req.parc_atr>0?'\n'+req.parc_atr+' em atraso':'';
   const msg='Olá! Preenchi o formulário da DJ Multimarcas.\n\nNome: '+nome+'\nVeículo: '+veic+'\nBanco: '+banco+'\nParcelas restantes: '+parcRest+atr+'\nRestrição: '+restricoes.join(', ');
   document.getElementById('zap_link').href='https://wa.me/'+ZAP_DJ+'?text='+encodeURIComponent(msg);
+  // salvar no Supabase e mostrar erro se falhar
+  try {
+    const res = await sbInsert(req);
+    if(res.error){
+      mostrarErro('Supabase erro: '+res.error.message);
+      return;
+    }
+  } catch(err){
+    mostrarErro('Fetch erro: '+err.message);
+    return;
+  }
   showTela('tela_sucesso');
-  // salvar no Supabase em background (não bloqueia)
-  sbInsert(req).catch(()=>{});
 }
 
 async function carregarReqs(){
