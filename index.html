@@ -86,7 +86,7 @@ textarea{resize:vertical;min-height:76px}
     <p>Preencha os dados e nossa equipe entra em contato pelo WhatsApp</p>
   </div>
   <div class="container">
-  <form id="form_principal" onsubmit="enviar(event)">
+  <div id="form_principal">
     <div class="card">
       <div class="card-title"><span class="step-badge">1</span> Seus dados</div>
       <div class="fg"><label class="lbl">&#128100; Nome completo <span class="obrig">*</span></label>
@@ -144,9 +144,9 @@ textarea{resize:vertical;min-height:76px}
       <div class="fg"><label class="lbl">&#128221; Observações</label>
         <textarea id="cl_obs" placeholder="Qualquer informação adicional..."></textarea></div>
     </div>
-    <button type="submit" class="btn-enviar" id="btn_enviar">Enviar para análise gratuita →</button>
+    <button type="button" class="btn-enviar" id="btn_enviar">Enviar para análise gratuita →</button>
 <div id="msg_erro" style="display:none;margin-top:12px;padding:12px;background:#fce8e8;border-radius:10px;color:#a32d2d;font-size:14px;text-align:center"></div>
-  </form>
+  </div>
     <div class="admin-link"><button type="button" onclick="showLogin()">Área administrativa</button></div>
   </div>
 </div>
@@ -256,8 +256,7 @@ function mostrarErro(msg){
   setTimeout(()=>el.style.display='none',5000);
   window.scrollTo(0,document.body.scrollHeight);
 }
-async function enviar(e){
-  if(e) e.preventDefault();
+async function enviar(){
   const nome=document.getElementById('cl_nome').value.trim();
   const zap=document.getElementById('cl_zap').value.trim();
   const banco=document.getElementById('cl_banco').value;
@@ -352,6 +351,7 @@ async function delReq(id){
   await sbDelete(id);
   todasReqs=todasReqs.filter(r=>r.id!==id);renderAdmin();
 }
+document.getElementById('btn_enviar').addEventListener('click', function(){ enviar(); });
 </script>
 </body>
 </html>
