@@ -144,6 +144,7 @@ textarea{resize:vertical;min-height:76px}
         <textarea id="cl_obs" placeholder="Qualquer informação adicional..."></textarea></div>
     </div>
     <button class="btn-enviar" id="btn_enviar" onclick="enviar()">Enviar para análise gratuita →</button>
+<div id="msg_erro" style="display:none;margin-top:12px;padding:12px;background:#fce8e8;border-radius:10px;color:#a32d2d;font-size:14px;text-align:center"></div>
     <div class="admin-link"><button onclick="showLogin()">Área administrativa</button></div>
   </div>
 </div>
@@ -217,27 +218,33 @@ function showAdmin(){showTela('tela_admin');carregarReqs()}
 function maskZap(el){let v=el.value.replace(/\D/g,'').slice(0,11);if(v.length>10)v=v.replace(/^(\d{2})(\d{5})(\d{4})$/,'($1) $2-$3');else if(v.length>6)v=v.replace(/^(\d{2})(\d{4})(\d+)$/,'($1) $2-$3');else if(v.length>2)v=v.replace(/^(\d{2})(\d+)$/,'($1) $2');el.value=v}
 function fazerLogin(){if(document.getElementById('senha_input').value===SENHA)showAdmin();else document.getElementById('login_err').style.display='block'}
 
+function mostrarErro(msg){
+  const el=document.getElementById('msg_erro');
+  el.textContent=msg;el.style.display='block';
+  setTimeout(()=>el.style.display='none',5000);
+  window.scrollTo(0,document.body.scrollHeight);
+}
 async function enviar(){
   const nome=document.getElementById('cl_nome').value.trim();
   const zap=document.getElementById('cl_zap').value.trim();
   const banco=document.getElementById('cl_banco').value;
   const parcRest=document.getElementById('cl_parc_rest').value;
   const restricoes=Array.from(document.querySelectorAll('input[name="rest"]:checked')).map(c=>c.value);
-  if(!nome)return alert('Informe seu nome.');
-  if(!zap||zap.length<10)return alert('Informe seu WhatsApp.');
-  if(!banco)return alert('Selecione o banco.');
-  if(!parcRest)return alert('Informe as parcelas restantes.');
-  if(!restricoes.length)return alert('Marque pelo menos uma opção de restrição.');
+  if(!nome){mostrarErro('Informe seu nome.');return;}
+  if(!zap||zap.replace(/\D/g,'').length<10){mostrarErro('Informe seu WhatsApp com DDD.');return;}
+  if(!banco){mostrarErro('Selecione o banco.');return;}
+  if(!parcRest){mostrarErro('Informe as parcelas restantes.');return;}
+  if(!restricoes.length){mostrarErro('Marque pelo menos uma opção de restrição.');return;}
   const btn=document.getElementById('btn_enviar');
   btn.disabled=true;btn.textContent='Enviando...';
   try {
     const req={nome,zap,cidade:document.getElementById('cl_cidade').value.trim(),placa:document.getElementById('cl_placa').value.trim().toUpperCase(),renavam:document.getElementById('cl_renavam').value.trim(),modelo:document.getElementById('cl_modelo').value.trim(),banco,parc_rest:parseInt(parcRest)||0,parc_atr:parseInt(document.getElementById('cl_parc_atr').value)||0,val_parc:document.getElementById('cl_val_parc').value.trim(),saldo:document.getElementById('cl_saldo').value.trim(),restricao:restricoes.join(', '),obs:document.getElementById('cl_obs').value.trim(),data_envio:new Date().toISOString(),visto:false};
     const res=await sb.from('solicitacoes').insert([req]);
     btn.disabled=false;btn.textContent='Enviar para análise gratuita →';
-    if(res.error){alert('Erro Supabase: '+res.error.message+' | Code: '+res.error.code);return;}
+    if(res.error){mostrarErro('Erro: '+res.error.message);return;}
   } catch(e) {
     btn.disabled=false;btn.textContent='Enviar para análise gratuita →';
-    alert('Erro JS: '+e.message);return;
+    mostrarErro('Erro JS: '+e.message);return;
   }
   const veic=req.modelo||req.placa||'Veículo não informado';
   const atr=req.parc_atr>0?'\n'+req.parc_atr+' em atraso':'';
