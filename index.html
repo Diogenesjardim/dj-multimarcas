@@ -272,7 +272,7 @@ async function enviar(){
   // montar dados FORA do try para garantir escopo
   const req={nome,zap,cidade:document.getElementById('cl_cidade').value.trim(),placa:document.getElementById('cl_placa').value.trim().toUpperCase(),renavam:document.getElementById('cl_renavam').value.trim(),modelo:document.getElementById('cl_modelo').value.trim(),banco,parc_rest:parseInt(parcRest)||0,parc_atr:parseInt(document.getElementById('cl_parc_atr').value)||0,val_parc:document.getElementById('cl_val_parc').value.trim(),saldo:document.getElementById('cl_saldo').value.trim(),restricao:restricoes.join(', '),obs:document.getElementById('cl_obs').value.trim(),data_envio:new Date().toISOString(),visto:false};
   // mostrar sucesso imediatamente (não depende do Supabase)
-  btn.disabled=false;btn.textContent='Enviar para análise gratuita →';
+  btn.disabled=false;btn.textContent='Enviar para analise gratuita ->';
   const veic=req.modelo||req.placa||'Veículo não informado';
   const atr=req.parc_atr>0?'\n'+req.parc_atr+' em atraso':'';
   const msg='Olá! Preenchi o formulário da DJ Multimarcas.\n\nNome: '+nome+'\nVeículo: '+veic+'\nBanco: '+banco+'\nParcelas restantes: '+parcRest+atr+'\nRestrição: '+restricoes.join(', ');
@@ -321,7 +321,7 @@ function renderAdmin(){
     return '<div class="req-card '+(r.visto?'':'novo')+'" onclick="marcarVisto('+r.id+')">'
       +'<div class="req-header"><div>'
       +'<div class="req-nome">'+r.nome+(r.visto?'':'<span class="badge novo">NOVO</span>')+'</div>'
-      +'<div class="req-data">'+r.zap+(r.cidade?' · '+r.cidade:'')+' · '+dt+'</div>'
+      +'<div class="req-data">'+r.zap+(r.cidade?' - '+r.cidade:'')+' - '+dt+'</div>'
       +'</div></div>'
       +'<div class="req-grid">'
       +(r.placa?'<div class="ri"><div class="ri-lbl">Placa</div><div class="ri-val">'+r.placa+'</div></div>':'')
@@ -351,7 +351,17 @@ async function delReq(id){
   await sbDelete(id);
   todasReqs=todasReqs.filter(r=>r.id!==id);renderAdmin();
 }
-document.getElementById('btn_enviar').addEventListener('click', function(){ enviar(); });
+document.addEventListener('DOMContentLoaded', function(){
+  var btn = document.getElementById('btn_enviar');
+  if(btn){
+    btn.addEventListener('click', function(){
+      mostrarErro('JS OK - clique detectado!');
+      enviar();
+    });
+  } else {
+    mostrarErro('ERRO: botão não encontrado!');
+  }
+});
 </script>
 </body>
 </html>
