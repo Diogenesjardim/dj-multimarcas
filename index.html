@@ -317,8 +317,6 @@ function renderAdmin(){
     const badgeAtr=!r.parc_atr||r.parc_atr===0?'<span class="badge ok">Em dia</span>':r.parc_atr<=3?'<span class="badge med">'+r.parc_atr+' atraso</span>':'<span class="badge bad">'+r.parc_atr+' atraso</span>';
     const temRest=r.restricao&&!r.restricao.startsWith('Nao');
     const zapNum=r.zap?r.zap.replace(/\D/g,''):'';
-    const msgZ=encodeURIComponent('Ola '+r.nome+'! Sou da DJ Multimarcas SP. Recebi sua solicitacao e gostaria de conversar. Tem um momento?');
-    const dados='Cliente: '+r.nome+'\nVeiculo: '+(r.modelo||r.placa||'-')+'\nBanco: '+r.banco+'\nParcelas: '+r.parc_rest+' rest / '+(r.parc_atr||0)+' atraso\nValor parcela: '+(r.val_parc||'-')+'\nSaldo: '+(r.saldo||'-')+'\nRestricao: '+(r.restricao||'-');
     return '<div class="req-card '+(r.visto?'':'novo')+'" onclick="marcarVisto('+r.id+')">'
       +'<div class="req-header"><div>'
       +'<div class="req-nome">'+r.nome+(r.visto?'':'<span class="badge novo">NOVO</span>')+'</div>'
@@ -335,13 +333,24 @@ function renderAdmin(){
       +(r.obs?'<div class="ri full"><div class="ri-lbl">Obs</div><div class="ri-val">'+r.obs+'</div></div>':'')
       +'</div>'
       +'<div class="req-actions">'
-      +'<button class="btn-copiar" onclick="event.stopPropagation();navigator.clipboard.writeText(''+dados.replace(/'/g,"\'").replace(/\n/g,'\\n')+'').then(()=>alert('Copiado!'))">Copiar dados</button>'
-      +'<button class="btn-zap2" onclick="event.stopPropagation();window.open('https://wa.me/'+zapNum+'?text='+msgZ+'','_blank')">WhatsApp</button>'
+      +'<button class="btn-copiar" onclick="event.stopPropagation();copiarDados('+r.id+')">Copiar dados</button>'
+      +'<button class="btn-zap2" onclick="event.stopPropagation();abrirZap('+r.id+')">WhatsApp</button>'
       +'<button class="btn-del2" onclick="event.stopPropagation();delReq('+r.id+')">Del</button>'
       +'</div></div>';
   }).join('');
 }
 
+function copiarDados(id){
+  const r=todasReqs.find(x=>x.id===id);if(!r)return;
+  const txt='Cliente: '+r.nome+'\nVeiculo: '+(r.modelo||r.placa||'-')+'\nBanco: '+r.banco+'\nParcelas: '+r.parc_rest+' rest / '+(r.parc_atr||0)+' atraso\nValor parcela: '+(r.val_parc||'-')+'\nSaldo: '+(r.saldo||'-')+'\nRestricao: '+(r.restricao||'-');
+  navigator.clipboard.writeText(txt).then(function(){alert('Copiado!');});
+}
+function abrirZap(id){
+  const r=todasReqs.find(x=>x.id===id);if(!r)return;
+  const zapNum=r.zap?r.zap.replace(/\D/g,''):'';
+  const msgZ=encodeURIComponent('Ola '+r.nome+'! Sou da DJ Multimarcas SP. Recebi sua solicitacao e gostaria de conversar. Tem um momento?');
+  window.open('https://wa.me/'+zapNum+'?text='+msgZ,'_blank');
+}
 async function marcarVisto(id){
   await sbUpdate(id);
   const idx=todasReqs.findIndex(r=>r.id===id);
