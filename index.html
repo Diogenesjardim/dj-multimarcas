@@ -359,7 +359,8 @@ async function delReq(id){
   await sbDelete(id);
   todasReqs=todasReqs.filter(r=>r.id!==id);renderAdmin();
 }
-// binding direto via onclick no HTML
+// abre admin direto se URL tiver ?admin
+if(window.location.search.includes('admin')){showLogin();}
 </script>
 </body>
 </html>
