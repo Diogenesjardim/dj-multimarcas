@@ -81,7 +81,7 @@ textarea{resize:vertical;min-height:76px}
 
 <div id="tela_form" class="tela ativa">
   <div class="hero">
-    <img id="logo_img" alt="DJ Multimarcas02 SP">
+    <img id="logo_img" src="download.jpg" alt="DJ Multimarcas02 SP">
     <h1>Solicite sua análise gratuita</h1>
     <p>Preencha os dados e nossa equipe entra em contato pelo WhatsApp</p>
   </div>
@@ -149,7 +149,7 @@ textarea{resize:vertical;min-height:76px}
 </div>
 
 <div id="tela_sucesso" class="tela">
-  <div class="hero"><img id="logo_img2" alt="DJ Multimarcas02 SP" style="max-width:260px"></div>
+  <div class="hero"><img id="logo_img2" src="download.jpg" alt="DJ Multimarcas02 SP" style="max-width:260px"></div>
   <div class="container">
     <div class="card sucesso-wrap">
       <div class="sucesso-ico">&#9989;</div>
@@ -209,8 +209,6 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let filtro = 'todos', todasReqs = [];
 
 const LOGO = 'download.jpg';
-document.getElementById('logo_img').src = LOGO;
-document.getElementById('logo_img2').src = LOGO;
 
 function showTela(id){document.querySelectorAll('.tela').forEach(t=>t.classList.remove('ativa'));document.getElementById(id).classList.add('ativa')}
 function showForm(){showTela('tela_form')}
