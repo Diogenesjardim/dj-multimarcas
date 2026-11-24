@@ -209,7 +209,7 @@ const ZAP_DJ = '5511956302529';
 const SUPABASE_URL = 'https://jxttklxxyosvphqqbczr.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dHRrbHh4eW9zdnBocXFiY3pyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0ODYwMDYsImV4cCI6MjExMTA2MjAwNn0.CKzD7ZLao_oR6CGfdmz9XQ97Q4RwTVEiCVFWtY-hMX0';
 
-// Funções fetch direto para Supabase REST API
+// Funcoes fetch direto para Supabase REST API
 async function sbInsert(data) {
   const r = await fetch(SUPABASE_URL+'/rest/v1/solicitacoes', {
     method:'POST',
@@ -266,16 +266,16 @@ async function enviar(){
   if(!zap||zap.replace(/\D/g,'').length<10){mostrarErro('Informe seu WhatsApp com DDD.');return;}
   if(!banco){mostrarErro('Selecione o banco.');return;}
   if(!parcRest){mostrarErro('Informe as parcelas restantes.');return;}
-  if(!restricoes.length){mostrarErro('Marque pelo menos uma opção de restrição.');return;}
+  if(!restricoes.length){mostrarErro('Marque pelo menos uma opcao de restricao.');return;}
   const btn=document.getElementById('btn_enviar');
   btn.disabled=true;btn.textContent='Enviando...';
   // montar dados FORA do try para garantir escopo
   const req={nome,zap,cidade:document.getElementById('cl_cidade').value.trim(),placa:document.getElementById('cl_placa').value.trim().toUpperCase(),renavam:document.getElementById('cl_renavam').value.trim(),modelo:document.getElementById('cl_modelo').value.trim(),banco,parc_rest:parseInt(parcRest)||0,parc_atr:parseInt(document.getElementById('cl_parc_atr').value)||0,val_parc:document.getElementById('cl_val_parc').value.trim(),saldo:document.getElementById('cl_saldo').value.trim(),restricao:restricoes.join(', '),obs:document.getElementById('cl_obs').value.trim(),data_envio:new Date().toISOString(),visto:false};
-  // mostrar sucesso imediatamente (não depende do Supabase)
+  // mostrar sucesso imediatamente (nao depende do Supabase)
   btn.disabled=false;btn.textContent='Enviar para analise gratuita ->';
-  const veic=req.modelo||req.placa||'Veículo não informado';
+  const veic=req.modelo||req.placa||'Veiculo nao informado';
   const atr=req.parc_atr>0?'\n'+req.parc_atr+' em atraso':'';
-  const msg='Olá! Preenchi o formulário da DJ Multimarcas.\n\nNome: '+nome+'\nVeículo: '+veic+'\nBanco: '+banco+'\nParcelas restantes: '+parcRest+atr+'\nRestrição: '+restricoes.join(', ');
+  const msg='Ola! Preenchi o formulario da DJ Multimarcas.\n\nNome: '+nome+'\nVeiculo: '+veic+'\nBanco: '+banco+'\nParcelas restantes: '+parcRest+atr+'\nRestricao: '+restricoes.join(', ');
   document.getElementById('zap_link').href='https://wa.me/'+ZAP_DJ+'?text='+encodeURIComponent(msg);
   // salvar no Supabase e mostrar erro se falhar
   try {
@@ -310,14 +310,14 @@ function renderAdmin(){
   else if(filtro==='atraso')reqs=reqs.filter(r=>r.parc_atr>0);
   else if(filtro==='restricao')reqs=reqs.filter(r=>r.restricao&&!r.restricao.startsWith('Nao'));
   const el=document.getElementById('req_list');
-  if(!reqs.length){el.innerHTML='<div class="empty">Nenhuma solicitação encontrada.</div>';return}
+  if(!reqs.length){el.innerHTML='<div class="empty">Nenhuma solicitacao encontrada.</div>';return}
   el.innerHTML=reqs.map(r=>{
     const dt=r.data_envio?new Date(r.data_envio).toLocaleString('pt-BR'):'';
     const badgeAtr=!r.parc_atr||r.parc_atr===0?'<span class="badge ok">Em dia</span>':r.parc_atr<=3?'<span class="badge med">'+r.parc_atr+' atraso</span>':'<span class="badge bad">'+r.parc_atr+' atraso</span>';
     const temRest=r.restricao&&!r.restricao.startsWith('Nao');
     const zapNum=r.zap?r.zap.replace(/\D/g,''):'';
-    const msgZ=encodeURIComponent('Olá '+r.nome+'! Sou da DJ Multimarcas SP. Recebi sua solicitação e gostaria de conversar. Tem um momento?');
-    const dados='Cliente: '+r.nome+'\nVeículo: '+(r.modelo||r.placa||'-')+'\nBanco: '+r.banco+'\nParcelas: '+r.parc_rest+' rest / '+(r.parc_atr||0)+' atraso\nValor parcela: '+(r.val_parc||'-')+'\nSaldo: '+(r.saldo||'-')+'\nRestrição: '+(r.restricao||'-');
+    const msgZ=encodeURIComponent('Ola '+r.nome+'! Sou da DJ Multimarcas SP. Recebi sua solicitacao e gostaria de conversar. Tem um momento?');
+    const dados='Cliente: '+r.nome+'\nVeiculo: '+(r.modelo||r.placa||'-')+'\nBanco: '+r.banco+'\nParcelas: '+r.parc_rest+' rest / '+(r.parc_atr||0)+' atraso\nValor parcela: '+(r.val_parc||'-')+'\nSaldo: '+(r.saldo||'-')+'\nRestricao: '+(r.restricao||'-');
     return '<div class="req-card '+(r.visto?'':'novo')+'" onclick="marcarVisto('+r.id+')">'
       +'<div class="req-header"><div>'
       +'<div class="req-nome">'+r.nome+(r.visto?'':'<span class="badge novo">NOVO</span>')+'</div>'
@@ -330,7 +330,7 @@ function renderAdmin(){
       +'<div class="ri"><div class="ri-lbl">Parcelas</div><div class="ri-val">'+r.parc_rest+' rest '+badgeAtr+'</div></div>'
       +(r.val_parc?'<div class="ri"><div class="ri-lbl">Parcela</div><div class="ri-val">R$ '+r.val_parc+'</div></div>':'')
       +(r.saldo?'<div class="ri"><div class="ri-lbl">Saldo</div><div class="ri-val">R$ '+r.saldo+'</div></div>':'')
-      +'<div class="ri '+(temRest?'full':'')+'"><div class="ri-lbl">Restrição</div><div class="ri-val" style="color:'+(temRest?'#a32d2d':'#3b6d11')+'">'+r.restricao+'</div></div>'
+      +'<div class="ri '+(temRest?'full':'')+'"><div class="ri-lbl">Restricao</div><div class="ri-val" style="color:'+(temRest?'#a32d2d':'#3b6d11')+'">'+r.restricao+'</div></div>'
       +(r.obs?'<div class="ri full"><div class="ri-lbl">Obs</div><div class="ri-val">'+r.obs+'</div></div>':'')
       +'</div>'
       +'<div class="req-actions">'
@@ -352,15 +352,7 @@ async function delReq(id){
   todasReqs=todasReqs.filter(r=>r.id!==id);renderAdmin();
 }
 document.addEventListener('DOMContentLoaded', function(){
-  var btn = document.getElementById('btn_enviar');
-  if(btn){
-    btn.addEventListener('click', function(){
-      mostrarErro('JS OK - clique detectado!');
-      enviar();
-    });
-  } else {
-    mostrarErro('ERRO: botão não encontrado!');
-  }
+  document.getElementById('btn_enviar').addEventListener('click', enviar);
 });
 </script>
 </body>
