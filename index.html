@@ -208,16 +208,17 @@ const SENHA = 'dj2024';
 const ZAP_DJ = '5511956302529';
 const SUPABASE_URL = 'https://jxttklxxyosvphqqbczr.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4dHRrbHh4eW9zdnBocXFiY3pyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU0ODYwMDYsImV4cCI6MjExMTA2MjAwNn0.CKzD7ZLao_oR6CGfdmz9XQ97Q4RwTVEiCVFWtY-hMX0';
+const sbHead = () => ({apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY});
 
-// Funcoes fetch direto para Supabase REST API
-async function sbInsert(data) {
-  const r = await fetch(SUPABASE_URL+'/rest/v1/solicitacoes', {
+// RPC call para Supabase (security definer - ignora RLS)
+async function sbRpc(funcName, params) {
+  const r = await fetch(SUPABASE_URL+'/rest/v1/rpc/'+funcName, {
     method:'POST',
-    headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},
-    body:JSON.stringify(data)
+    headers:{...sbHead(), 'Content-Type':'application/json'},
+    body:JSON.stringify(params||{})
   });
-  if(!r.ok){const t=await r.text();return{error:{message:t}};}
-  return{error:null};
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const t=await r.text(); return t?JSON.parse(t):null;
 }
 async function sbSelect() {
   const r = await fetch(SUPABASE_URL+'/rest/v1/solicitacoes?select=*&order=data_envio.desc&limit=100', {
@@ -269,26 +270,24 @@ async function enviar(){
   if(!restricoes.length){mostrarErro('Marque pelo menos uma opcao de restricao.');return;}
   const btn=document.getElementById('btn_enviar');
   btn.disabled=true;btn.textContent='Enviando...';
-  // montar dados FORA do try para garantir escopo
-  const req={nome,zap,cidade:document.getElementById('cl_cidade').value.trim(),placa:document.getElementById('cl_placa').value.trim().toUpperCase(),renavam:document.getElementById('cl_renavam').value.trim(),modelo:document.getElementById('cl_modelo').value.trim(),banco,parc_rest:parseInt(parcRest)||0,parc_atr:parseInt(document.getElementById('cl_parc_atr').value)||0,val_parc:document.getElementById('cl_val_parc').value.trim(),saldo:document.getElementById('cl_saldo').value.trim(),restricao:restricoes.join(', '),obs:document.getElementById('cl_obs').value.trim(),data_envio:new Date().toISOString(),visto:false};
-  // mostrar sucesso imediatamente (nao depende do Supabase)
-  btn.disabled=false;btn.textContent='Enviar para analise gratuita ->';
+  // montar dados
+  const req={nome,zap,cidade:document.getElementById('cl_cidade').value.trim(),placa:document.getElementById('cl_placa').value.trim().toUpperCase(),renavam:document.getElementById('cl_renavam').value.trim(),modelo:document.getElementById('cl_modelo').value.trim(),banco,parc_rest:parseInt(parcRest)||0,parc_atr:parseInt(document.getElementById('cl_parc_atr').value)||0,val_parc:document.getElementById('cl_val_parc').value.trim(),saldo:document.getElementById('cl_saldo').value.trim(),restricao:restricoes.join(', '),obs:document.getElementById('cl_obs').value.trim()};
+  // montar link WhatsApp
   const veic=req.modelo||req.placa||'Veiculo nao informado';
   const atr=req.parc_atr>0?'\n'+req.parc_atr+' em atraso':'';
   const msg='Ola! Preenchi o formulario da DJ Multimarcas.\n\nNome: '+nome+'\nVeiculo: '+veic+'\nBanco: '+banco+'\nParcelas restantes: '+parcRest+atr+'\nRestricao: '+restricoes.join(', ');
   document.getElementById('zap_link').href='https://wa.me/'+ZAP_DJ+'?text='+encodeURIComponent(msg);
-  // salvar no Supabase e mostrar erro se falhar
-  try {
-    const res = await sbInsert(req);
-    if(res.error){
-      mostrarErro('Supabase erro: '+res.error.message);
-      return;
-    }
-  } catch(err){
-    mostrarErro('Fetch erro: '+err.message);
-    return;
-  }
+  // mostrar sucesso imediatamente - como o Riviera faz
+  btn.disabled=false;btn.textContent='Enviar para analise gratuita ->';
   showTela('tela_sucesso');
+  // salvar no Supabase em background via RPC security definer
+  sbRpc('criar_solicitacao', {
+    p_nome:req.nome, p_zap:req.zap, p_cidade:req.cidade, p_placa:req.placa,
+    p_renavam:req.renavam, p_modelo:req.modelo, p_banco:req.banco,
+    p_parc_rest:req.parc_rest, p_parc_atr:req.parc_atr,
+    p_val_parc:req.val_parc, p_saldo:req.saldo,
+    p_restricao:req.restricao, p_obs:req.obs
+  }).catch(function(){});
 }
 
 async function carregarReqs(){
